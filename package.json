@@ -1,0 +1,32 @@
+{
+  "name": "rfasqls",
+  "version": "1.0.0",
+  "description": "Contains handy functions and other stuff",
+  "main": "main.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AqilCont/rfasqls.git"
+  },
+  "keywords": [
+    "random",
+    "functions",
+    "sql",
+    "sqlite",
+    "handy"
+  ],
+  "author": "Aqil Contractor <“aqilcm@gmail.com”>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AqilCont/rfasqls/issues"
+  },
+  "homepage": "https://github.com/AqilCont/rfasqls#readme",
+  "dependencies": {
+    "request": "^2.88.0",
+    "sqlite": "^3.0.0",
+    "youtube-dl": "^1.12.2",
+    "ytdl-core": "^0.26.1"
+  }
+}
