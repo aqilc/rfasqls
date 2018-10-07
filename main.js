@@ -1,4 +1,4 @@
-module.export = {
+module.exports = {
   // Basic, simple events
   Events: require("./f/events"),
 
