@@ -4,7 +4,7 @@
   "description": "Contains handy functions and other stuff",
   "main": "main.js",
   "scripts": {
-    "test": "mocha --reporter spec",
+    "test": "node_modules/.bin/mocha --reporter spec",
     "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec test/*"
   },
   "repository": {
