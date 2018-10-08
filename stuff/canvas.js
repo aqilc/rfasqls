@@ -31,6 +31,15 @@ module.exports = {
       ctx.stroke()
     }
   },
+
+  /**
+   * Makes a circle for the `canvas@next` module
+   
+   * @param {Object} ctx
+   * @param {number} x
+   * @param {number} y
+   * @param {number} radius
+   */
   circle(ctx, x, y, radius) {
     ctx.beginPath()
     ctx.arc(x, y, radius, 0, Math.PI*2, true)
