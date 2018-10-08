@@ -3,8 +3,7 @@
 This is a module made specifically for my(AqilCont)'s and his friends' use.
 
 ### Installation
-```
-npm i rfasqls```
+```npm i rfasqls```
 
 ## Functions
 To access the functions, you need to do this:
