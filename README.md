@@ -3,12 +3,15 @@
 This is a module made specifically for my(AqilCont)'s and his friends' use.
 
 ### Installation
-```npm i rfasqls```
+```
+npm i rfasqls
+```
 
 ## Functions
 To access the functions, you need to do this:
 ```js
-const rfasqls_functions = require("rfasqls").Functions;```
+const rfasqls_functions = require("rfasqls").Functions;
+```
 
 ##### Some functions include:
  - `random(min(Number), max(Number), round(Boolean))`: Spawns a random number from `min` to `max`. Rounds the number if you put `true` for the `round` argument.
