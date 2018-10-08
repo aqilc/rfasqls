@@ -1,4 +1,4 @@
-# rfasqls
+# rfasqls [![Build Status](https://travis-ci.com/AqilCont/rfasqls.svg?branch=master)](https://travis-ci.com/AqilCont/rfasqls) [![Coverage Status](https://coveralls.io/repos/github/AqilCont/rfasqls/badge.svg?branch=master)](https://coveralls.io/github/AqilCont/rfasqls?branch=master)
 
 This is a module made specifically for my(AqilCont)'s and his friends' use.
 
