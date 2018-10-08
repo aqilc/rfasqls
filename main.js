@@ -1,7 +1,7 @@
 module.exports = {
   // Basic, simple events
-  Events: require("./f/events"),
+  Events: require("./stuff/events"),
 
   // An Object containing handy functions
-  Functions: require("./f/functions.js")
+  Functions: require("./stuff/functions.js")
 }
