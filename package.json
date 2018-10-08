@@ -28,8 +28,5 @@
     "sqlite": "^3.0.0",
     "youtube-dl": "^1.12.2",
     "ytdl-core": "^0.26.1"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0"
   }
 }

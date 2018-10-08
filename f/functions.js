@@ -181,7 +181,7 @@ module.exports = {
    */
   bytes(bytes, pre = 1) {
     if(bytes > 1000000000000)
-      return `${(bytes/1000000000000).toFixed(pre)} TB`
+      return `${(bytes/1000000000000).toFixed(1)} TB`
     if(bytes > 1000000000)
       return `${(bytes/1000000000).toFixed(pre)} GB`
     if(bytes > 1000000)
@@ -254,35 +254,5 @@ module.exports = {
     if(typeof str !== "string")
       return new Error("The first argument needs to be a string.")
     return str.split(" ").map(val => val.slice(0, 1).toUpperCase() + val.slice(1).toLowerCase()).join(" ")
-  },
-
-  /**
-   * You can input an array or object and check for it's values' types, or the values it inherits
-   * @param {array or object} arr
-   * @param {string, object, or array} type
-   * @return {boolean}
-   */
-  check(arr, type) {
-    if(typeof type === "string") {
-      if(Array.isArray(arr))
-        return arr.every(e => typeof e === type);
-      else
-        return Object.values(arr).every(e => typeof e === type);
-    } else if(type instanceof Array) {
-      if(Array.isArray(arr))
-        for(let i = 0; i < type.length; i ++) {
-          if(this.check(arr, "object") && arr.every(e => !Array.isArray(e)) && arr.every(e => e[type[i]]))
-            if(!arr.every(e => !Object.keys(e).includes(type[i])))
-              return false;
-          else if(!arr.includes(type[i]))
-            return false;
-        }
-      else
-        for(let i = 0; i < type.length; i ++)
-          if(!Object.keys(arr).includes(type[i]))
-            return false;
-      return true;
-    } else
-      return false;
   }
 }
