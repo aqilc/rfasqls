@@ -22,3 +22,5 @@ const rfasqls_functions = require("rfasqls").Functions;
 6. `parseUrl(url(String))`: Returns a promise that resolves with JSON from a given URL.
 7. `capFirst(str(String))`: Capitalizes the first letter of each word in a string.
 8. `check(arr(Object or Array), type(Array or String))`: This one is KINDA hard to explain and use. I would recommend ignoring it.
+
+> BTW I didn't just spam type `rfasqls`... it is an abbreviation for something i should have written down ;-;

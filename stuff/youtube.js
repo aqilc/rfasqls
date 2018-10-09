@@ -8,6 +8,7 @@ const ytAk = require("./.data/config.js")["yt-token"];
 // Youtube class that does shit
 class YT {
   constructor(link, options) {
+    
     return ytdl(link, options);
   }
 

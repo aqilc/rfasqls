@@ -1,5 +1,5 @@
 // Gets the package that is the point of this whole thing
-const sql = require("sqlite")
+const f = require("./functions.js");
 
 // The SQL class that supposedly contains every thing you could think of with sql
 class SQL {
@@ -9,22 +9,19 @@ class SQL {
    * @param {string} file
    * @returns {Object}
    */
-  constructor(file) {
-    if(!file || !file.includes("./"))
-      return new Error("You need to specify the correct file name for me to do my job");
-
-    sql.open("../../" + (file.startsWith("../") ? "../" : "") + file.slice(2, file.length));
-
+  constructor(sql) {
+    if(typeof sql !== "object")
+      return new TypeError("Please input the `sqlite` package into the module after opening the file of database")
     this.sql = sql;
-    this.run = sql.run;
-    this.get = sql.get;
-    this.all = sql.all;
-    this.toString = sql.toString;
-
-    return this;
+    this.driver = this.sql.driver;
+    this.run = this.sql.run;
+    this.get = this.sql.get;
+    this.all = this.sql.all;
+    this.each = this.sql.each;
+    this.toString = this.sql.toString;
   }
 
-  create(table, values) {
+  async create(table, values) {
     if(typeof table !== "string" || typeof values !== "object")
       return new TypeError("Please specify both the `table` and `values` parameter")
 
@@ -36,17 +33,24 @@ class SQL {
     if(statement[statement.length - 1] === "(")
       return new TypeError("Please include STRING values in the 'values' parameter");
 
-    this.run(statement + ")");
+    await this.run(statement + ")");
+    return this;
   }
 
   async insert(table, values) {
     if(typeof table !== "string" && typeof values !== "object")
       throw new TypeError("Please input the first parameter as a string and the second parameter as an object");
 
-    let tbls = await this.sql.all("SELECT * FROM sqlite_master");
-    if(!tbls.find(t => t.name === table))
+    let tbl = await this.sql.all("SELECT * FROM sqlite_master WHERE name = " + table);
+    if(!tbl)
       throw new Error("Table doesn't exist");
 
+    let columns = f.ssParse(tbl.sql);
+    for (let i in values)
+      if(!Object.keys(columns).includes(i))
+        throw new Error("Values specified do not exist in the table specified");
+
+    this.run(`INSERT INTO ${tbl.name} (${Object.keys(columns).join(", ")}) VALUES (${Object.values(columns).join(", ")})`)
   }
 }
 module.exports = SQL;

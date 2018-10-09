@@ -16,5 +16,8 @@ module.exports = {
         "no-case-declarations": "error",
         "no-useless-escape": "error",
         "constructor-super": "error",
+        "no-fallthrough": "off",
+        "no-empty": "warn",
+        "no-unused-vars": "warn",
     }
 };

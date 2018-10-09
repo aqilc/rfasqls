@@ -1,6 +1,6 @@
 {
   "name": "rfasqls",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Contains handy functions and other stuff",
   "main": "main.js",
   "scripts": {
@@ -26,7 +26,6 @@
   "homepage": "https://github.com/AqilCont/rfasqls#readme",
   "dependencies": {
     "request": "^2.88.0",
-    "sqlite": "^3.0.0",
     "youtube-dl": "^1.12.2",
     "ytdl-core": "^0.26.1"
   },

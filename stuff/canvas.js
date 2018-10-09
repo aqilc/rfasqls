@@ -34,7 +34,7 @@ module.exports = {
 
   /**
    * Makes a circle for the `canvas@next` module
-   
+
    * @param {Object} ctx
    * @param {number} x
    * @param {number} y
@@ -54,5 +54,58 @@ module.exports = {
 
     // Returns size
     return { font: ctx.font, size: size }
+  },
+  dist(obj1, obj2) {
+    if(!this.check([obj1, obj2], ["x", "y"]))
+      return 0;
+
+    return Math.abs(Math.sqrt((obj1.x - obj2.x) ^ 2 + (obj1.y - obj2.y) ^ 2));
+  },
+  colliding(obj1, obj2, type) {
+    if(!this.check([obj1, obj2], "object") && this.check([obj1, obj2], ["x", "y"]))
+      return false;
+
+    let r, c, m;
+    switch(type) {
+      case "r:c":
+        r = obj1, c = obj2;
+      case "c:r":
+        if(!r && !c)
+          r = obj2, c = obj1;
+
+        if(!r.w || !r.h)
+          return false;
+        if(!(c.w && c.h) || !c.r)
+          return false;
+
+        if(c.r) {
+          let cx = c.x - Math.max(r.x, Math.min(c.x, r.x + r.w)),
+              cy = c.y - Math.max(r.y, Math.min(c.y, r.y + r.h));
+          return (cx * cx + cy * cy) < (c.r * c.r)/4;
+        } else if(c.w && c.h) {
+          return false;
+        } else
+          return false;
+      case "c:m":
+        m = obj2, c = obj1;
+      case "m:c":
+        if(!m || !c)
+          m = obj1, c = obj2;
+        if(!c.r && !c.h && !c.w)
+          return false;
+        else {
+          let w, h;
+          if(c.r)
+            w = c.r, h = c.h;
+          else if(c.h || c.w)
+            w = c.w || c.h, h = c.h || c.w;
+          else
+            return false;
+
+          if(this.dist(m.x || 0, m.y || 0, w, h))
+            return true;
+        }
+        break;
+    }
   },
 }

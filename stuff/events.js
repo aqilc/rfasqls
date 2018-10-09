@@ -19,7 +19,9 @@ class Events {
       return new Error("You need to specify a function when specifying an event");
     this.events.push({
       name: event,
-      fn: fn
+      fn: fn,
+      called: 0,
+      last_call: new Date().valueOf(),
     });
     return this;
   }
@@ -34,7 +36,7 @@ class Events {
     let e = this.events.find(e => e.name === event);
 
     if(e)
-      e.fn(...args);
+      e.fn(...args), e.called ++, e.last_call = new Date().valueOf();
     else return new Error("Event doesn't exist");
 
     // Returns the object

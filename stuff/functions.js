@@ -284,5 +284,24 @@ module.exports = {
       return true;
     } else
       return false;
+  },
+
+  /**
+   * Gets the columns from a table starter statment.
+   * @param {string} statement
+   * @return {object}
+   */
+  ssParse(statement) {
+    let json = JSON.parse(statement
+      .replace(/CREATE TABLE/g, "")
+      .replace(/IF NOT EXISTS/g, "").trim()
+      .slice(json.split(" ")[0].length).trim()
+      .replace(/\(/g, "{\"").replace(/\)/g, "\"}")
+      .replace(/, /g, "\",\"")
+      .replace(/INTEGER PRIMARY KEY/g, "INTEGER_PRIMARY_KEY")
+      .replace(/NOT NULL/g, "NOT_NULL")
+      .replace(/ /g, "\": \"")
+      .replace(/_/g, " "));
+    return json;
   }
 }
