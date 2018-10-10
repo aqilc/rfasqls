@@ -52,5 +52,46 @@ class SQL {
 
     this.run(`INSERT INTO ${tbl.name} (${Object.keys(columns).join(", ")}) VALUES (${Object.values(columns).join(", ")})`)
   }
+
+  get setup() {
+    let t = this;
+    return {
+      async users({ items, quests, login } = {}, additional) {
+        await t.create("users", Object.assign({
+          num: "INTEGER PRIMARY KEY",
+          id: "TEXT",
+          points: "INTEGER",
+          streak: "INTEGER",
+          last_daily: "INTEGER",
+          tags: "TEXT",
+          username: login && "TEXT",
+          password: login && "TEXT",
+          items: items && "TEXT",
+          quests: quests && "TEXT",
+        }, additional));
+        return this;
+      },
+      async warns(additional) {
+        await t.create("warns", Object.assign({
+          num: "INTEGER PRIMARY KEY",
+          id: "TEXT",
+          mid: "TEXT",
+          reason: "TEXT",
+          date: "INTEGER"
+        }, additional));
+        return this;
+      },
+      async guilds({ role } = {}, additional) {
+        await t.create("guilds", Object.assign({
+          num: "INTEGER PRIMARY KEY",
+          id: "TEXT",
+          settings: "TEXT",
+          pre: "TEXT",
+          rset: role && "TEXT",
+        }, additional));
+        return this;
+      }
+    };
+  }
 }
 module.exports = SQL;

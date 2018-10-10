@@ -33,10 +33,15 @@ class Events {
    * @returns {Object}
    */
   emit(event, ...args) {
-    let e = this.events.find(e => e.name === event);
+    let e = this.events.filter(e => e.name === event);
 
-    if(e)
-      e.fn(...args), e.called ++, e.last_call = new Date().valueOf();
+    if(e !== []) {
+      if(e.length < 1)
+        e[0].fn(...args), e[0].called ++, e[0].last_call = Date.now();
+      else
+        for (var i = 0; i < e.length; i ++)
+          e[i].fn(...args), e[i].called ++, e[i].last_call = Date.now();
+    }
     else return new Error("Event doesn't exist");
 
     // Returns the object

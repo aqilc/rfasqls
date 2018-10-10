@@ -1,19 +1,25 @@
 module.exports = {
   // Basic, simple events
-  Events: require("./stuff/events"),
+  events: require("./stuff/events"),
 
   // An Object containing handy functions
-  Functions: require("./stuff/functions.js"),
+  functions: require("./stuff/functions.js"),
 
   // A Class containing every discord function
-  Discord: require("./stuff/discord.js"),
+  discord: require("./stuff/discord.js"),
 
   // Trivia questions
-  Trivia: require("./stuff/trivia.js"),
+  trivia: require("./stuff/trivia.js"),
 
   // Canvas Functions
-  Canvas: require("./stuff/canvas.js"),
+  canvas: require("./stuff/canvas.js"),
 
   // SQL Class
-  SQL: require("./stuff/canvas.js")
+  SQL: require("./stuff/canvas.js"),
+
+  // Exports modules too just because why not
+  Discord: require("discord.js"),
+  "ytdl-core": require("ytdl-core"),
+  "youtube-dl": require("youtube-dl"),
+  request: require("request")
 }

@@ -19,5 +19,6 @@ module.exports = {
         "no-fallthrough": "off",
         "no-empty": "warn",
         "no-unused-vars": "warn",
+        "no-console": "off",
     }
 };
