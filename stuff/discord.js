@@ -57,7 +57,6 @@ class Discord {
         for (var i = 0; i < e.length; i ++)
           e[i].fn(...args), e[i].called ++, e[i].last_call = Date.now();
     }
-    else return new Error("Event doesn't exist");
 
     // Returns the object
     return this;
