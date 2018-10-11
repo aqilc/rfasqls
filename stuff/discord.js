@@ -97,7 +97,7 @@ class Discord {
 		return this._commands;
 	}
 	command(name) {
-		return this._commands[Object.values(this._commands).findIndex(n => n === name || (n[this._args.a] && n[this._args.a].includes(name)))];
+		return this._commands[Object.keys(this._commands).find(n => n == name || (this._commands[n][this._args.a] && this._commands[n][this._args.a].includes(name)))];
 	}
 	setup() {
 		this.client.on("ready", () => {
@@ -113,7 +113,7 @@ class Discord {
 				} catch(err) {
 					evalled = err;
 				}
-				msg.channel.send(new discord.RichEmbed()
+				return msg.channel.send(new discord.RichEmbed()
 					.setAuthor("Run")
 					.setDescription(`**Input:** \`\`\`js\n${code}\`\`\`\n**Output:** \`\`\`js\n${evalled}\`\`\``))
 			}
