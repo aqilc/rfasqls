@@ -1,6 +1,6 @@
 {
   "name": "rfasqls",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Contains handy functions and other stuff",
   "main": "main.js",
   "scripts": {
