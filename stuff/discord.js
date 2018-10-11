@@ -113,7 +113,7 @@ class Discord {
 				} catch(err) {
 					evalled = err;
 				}
-				msg.channel.send(new Discord.RichEmbed()
+				msg.channel.send(new discord.RichEmbed()
 					.setAuthor("Run")
 					.setDescription(`**Input:** \`\`\`js\n${code}\`\`\`\n**Output:** \`\`\`js\n${evalled}\`\`\``))
 			}
