@@ -14,12 +14,12 @@ describe("#rfasqls", function() {
     expect(result).to.equal(true);
   })
   it("should give me an object containing on and emit functions plus an array of events", function() {
-    var result = functions.check(new events(), ["on", "emit", "events"]);
+    var result = functions.check(new events(), ["events"]);
     expect(result).to.equal(true);
   });
   it("should give me an object containing a question, answers, and other crap", async function() {
     const question = await trivia.getQuestion();
-    var result = question.response_code === 0 && functions.check(question.result, ["question", "correct_answer", "incorrect_answers", "type", "difficulty", "category"]);
+    var result = question.response_code === 0 && functions.check(question.result[0] || {}, ["question", "correct_answer", "incorrect_answers", "type", "difficulty", "category"]);
     expect(result).to.equal(true);
   })
 })
