@@ -19,7 +19,7 @@ describe("#rfasqls", function() {
   });
   it("should give me an object containing a question, answers, and other crap", async function() {
     const question = await trivia.getQuestion();
-    var result = question.response_code === 0 && functions.check(question.result[0] || {}, ["question", "correct_answer", "incorrect_answers", "type", "difficulty", "category"]);
+    var result = question.response_code === 0 && functions.check(question.results[0] || {}, ["question", "correct_answer", "incorrect_answers", "type", "difficulty", "category"]);
     expect(result).to.equal(true);
   })
 })
