@@ -97,7 +97,7 @@ class Discord {
 		return this._commands;
 	}
 	command(name) {
-		return this._commands[Object.keys(this._commands).findIndex(n => n === name || n[this.args.a].includes(name))];
+		return this._commands[Object.keys(this._commands).findIndex(n => n === name || n[this._args.a].includes(name))];
 	}
 	setup() {
 		this.client.on("ready", () => {
