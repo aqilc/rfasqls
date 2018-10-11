@@ -51,7 +51,7 @@ class Discord {
     let e = this._events.filter(e => e.name === event);
 
     if(e !== []) {
-      if(e.length < 1)
+      if(e.length === 1)
         e[0].fn(...args), e[0].called ++, e[0].last_call = Date.now();
       else
         for (var i = 0; i < e.length; i ++)
