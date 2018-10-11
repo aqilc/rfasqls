@@ -1,5 +1,5 @@
 module.exports = {
-  get_question(cat, diff, type) {
+  getQuestion(cat, diff, type) {
     let url = "https://opentdb.com/api.php?amount=1";
     if(cat && cat <= 32 && cat >= 9)
       url += "&category=" + ~~ cat;
