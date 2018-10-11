@@ -125,8 +125,8 @@ class Discord {
 				return this.emit("no-command", msg);
 
 			const args = msg.content.slice(prefix.length).trim().split(/ +/g);
+			const content = msg.content.slice(prefix.length + args[0]);
 			const command = this.command(args.shift().toLowerCase());
-			const content = msg.content.slice(prefix.length + command);
 
 			if(!command)
 				return this.emit("no-command", msg);
