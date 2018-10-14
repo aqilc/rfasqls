@@ -1,29 +1,34 @@
 // So we can use the classes to check crap
 const discord = require("discord.js");
+const Events = require("./events.js");
+const map = discord.Collection();
 
-class Discord {
-	constructor(client, { name, cooldown, cats, admins, prefix, evalprefix, args } = {}) {
+class Discord extends Events {
+	constructor(client, { gcdMessage, cdMessage, gcooldowns, cooldowns, name, prefix, cats, admins, evalprefix, evalfunc, args } = {}, setup) {
+		super();
 
 		if(!client)
 			return new Error("Need the 'client' object for this module to function properly")
 		this.name = name;
 		this.client = client;
-		this.cooldown = cooldown;
 		this.prefix = prefix;
 		this.evalprefix = evalprefix;
-		this.categories = Object.assign((cats instanceof Object && cats) || {}, {
-			utility: "utility",
-			fun: "fun",
-			botAdmin: "botAdmin"
-		});
-		this.admins = (admins instanceof Array && admins) || [];
+		this.cooldowns = cooldowns || true;
+		this.gcooldowns = gcooldowns || true;
+		this.cdMessage = cdMessage || `Please wait \`%time MS\` until you can use the \`%command\` command`
+		this.gcdMessage = gcdMessage || `***SLOW DOWNNNN!*** You guys are using this command too fast! Wait \`%time MS\` before you can use \`%command\` command again`;
+		this.evalfunc = typeof evalfunc === "function" && evalfunc;
+		this.categories = cats instanceof Array && cats || [];
+		this.admins = admins instanceof Array && admins || [];
 
 		if(!this.name)
 			throw new Error("You need to specify your discord bot's name in the constructor options.")
 		if(!this.prefix)
 			throw new Error("You need to specify a prefix in the constructor options.")
-		if(this.admins === [] && this.evalprefix)
+		if(this.admins === [] && this.evalprefix && this.evalfunc)
 			console.warn("It is advisable to specify admins to use the eval abilities of this bot.")
+		if(this.evalprefix && !this.evalfunc)
+			console.warn("You should probably include an `evalfunc` function to use eval")
 		if (!(args instanceof Object) || !Object.keys(args).every(v => typeof v === "string"))
 			throw new Error("Every value in the 'args' object needs to be a string")
 
@@ -37,41 +42,19 @@ class Discord {
 			h: args.h || "h", // Hidden or not
 			p: args.p || "p", // Permissions
 			cd: args.cd || "cd", // Cooldown
+			gcd: args.gcd, // Global Cooldowns
 			d: args.d || "d", // Description
 			u: args.u || "u" // Usage
 		};
 
+		if(setup)
+			this.setup();
 
 		// Events
 		this._events = [];
 
 		return this;
 	}
-	emit(event, ...args) {
-    let e = this._events.filter(e => e.name === event);
-
-    if(e !== []) {
-      if(e.length === 1)
-        e[0].fn(...args), e[0].called ++, e[0].last_call = Date.now();
-      else
-        for (var i = 0; i < e.length; i ++)
-          e[i].fn(...args), e[i].called ++, e[i].last_call = Date.now();
-    }
-
-    // Returns the object
-    return this;
-  }
-	on(event, fn) {
-    if(typeof fn !== "function")
-      return new Error("You need to specify a function when specifying an event");
-    this._events.push({
-      name: event,
-      fn: fn,
-      called: 0,
-      last_call: new Date().valueOf(),
-    });
-    return this;
-  }
 	set commands(cmds) {
 		if(!(cmds instanceof Object))
 			return;
@@ -97,44 +80,78 @@ class Discord {
 		return this._commands;
 	}
 	command(name) {
-		return this._commands[Object.keys(this._commands).find(n => n == name || (this._commands[n][this._args.a] && this._commands[n][this._args.a].includes(name)))];
+		let command = Object.keys(this._commands).find(n => n == name || (this._commands[n][this._args.a] && this._commands[n][this._args.a].includes(name))),
+				cmd = this._commands[command];
+		return (cmd.name = command);
 	}
 	setup() {
+		const cooldowns = new map();
+		const gcooldowns = new map();
+
+		if(!this.evalprefix && this.evalfunc)
+			this.commands = {
+				eval: {
+					[this._args.f]: this.evalfunc,
+				}
+			};
+
 		this.client.on("ready", () => {
 			console.log(`${this.client.user.tag} (ID:${this.client.user.id}) is online on ${new Date().toUTCString()}`);
 			this.emit("ready");
 		})
 		this.client.on("message", msg => {
 			this.emit("message", msg);
-			if(this.evalprefix && msg.content.startsWith(this.evalprefix) && this.admins.includes(msg.author.id)) {
-				let code = msg.content.slice(this.evalprefix.length).trim(), evalled;
-				try {
-					evalled = eval(code);
-				} catch(err) {
-					evalled = err;
-				}
-				return msg.channel.send(new discord.RichEmbed()
-					.setAuthor("Run")
-					.setDescription(`**Input:** \`\`\`js\n${code}\`\`\`\n**Output:** \`\`\`js\n${evalled}\`\`\``))
+			if(this.evalprefix && this.evalfunc && msg.content.startsWith(this.evalprefix) && this.admins.includes(msg.author.id)) {
+				let code = msg.content.slice(this.evalprefix.length).trim();
+				this.evalfunc(msg, code);
 			}
 			if(msg.channel.type !== "text")
-				this.emit("dm", msg);
+				return this.emit("dm", msg);
 
 			const prefix = msg.content.startsWith(this.prefix) && this.prefix || msg.content.match(new RegExp(`^<@!?${this.client.user.id}> `)) && msg.content.match(new RegExp(`^<@!?${this.client.user.id}> `))[0];
 			if(msg.author.bot || !prefix)
 				return this.emit("no-command", msg);
 
 			const args = msg.content.slice(prefix.length).trim().split(/ +/g);
-			const content = msg.content.slice(prefix.length + args[0].length).trim();
-			const command = this.command(args.shift().toLowerCase());
+			const cmd = args.shift().toLowerCase();
+			const content = msg.content.slice(prefix.length + cmd).trim();
+			const command = this.command(cmd);
 
 			if(!command)
 				return this.emit("no-command", msg);
-			this.emit("command", msg, command)
-			command[this._args.f](msg, content)
+
+			// Cooldowns
+			if (this.cooldowns) {
+				let cd = command[this._args.cd] || 0;
+				if(cd && !cooldowns.has(command.name))
+					cooldowns.set(command.name, new map())
+				let timestamps = cooldowns.get(command.name), now = Date.now();
+				if(!timestamps.has(msg.author.id) && cd)
+					timestamps.set(msg.author.id, now), setTimeout(() => timestamps.delete(msg.author.id), cd);
+				else if(cd) {
+					let endtime = timestamps.get(msg.author.id) + cd;
+					if(now < endtime)
+						return msg.reply(this.gcdMessage.replace(/%command/g, command.name).replace(/%time/g, endtime - Date.now()).replace(/%timesec/g, ((endtime - Date.now()) / 1000).toFixed(1)));
+					timestamps.set(msg.author.id, now), setTimeout(() => timestamps.delete(msg.author.id), cd);
+				}
+			}
+
+			// Global Cooldowns
+			if (this.gcooldowns) {
+				let gcd = command[this._args.gcd] || 0;
+				if(gcd)
+					if((gcooldowns.get(command.name) || 0) + gcd > Date.now())
+						return msg.reply(this.gcdMessage.replace(/%command/g, command.name).replace(/%time/g, gcooldowns.get(command.name) + gcd - Date.now()).replace(/%timesec/g, (gcooldowns.get(command.name) + gcd - Date.now()).toFixed(1)));
+					else cooldowns.set(command.name, Date.now())
+			}
+
+			this.emit("command", msg, command);
+			command[this._args.f](msg, content);
 		})
 		this.client.on("guildMemberJoin", member => this.emit("mem-join", member))
 		this.client.on("guildMemberJoin", member => this.emit("mem-leave", member))
+
+		return this;
 	}
 
 
