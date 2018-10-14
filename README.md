@@ -7,10 +7,28 @@ This is a module made specifically for my(AqilCont)'s and his friends' use.
 npm i rfasqls
 ```
 
+## Discord
+Usage:
+```js
+const rfasqls_discord = require("rfasqls").discord,
+      rfa_bot = new rfasqls(client, { (Options) });
+```
+The object it returns also has its own custom event emitter. Some useful events:
+ - `no-command`: When a message is send and it is not a command recognized by the package.
+ - `dm`: When the bot is DMed.
+#### Options
+ - `name(String)`(required): Name of this bot
+ - `prefix(String)`(required): The prefix
+ - `admins(Array<String>)`: IDs of all the administrators of the bot. Info is mainly used for the eval feature.
+ - `cats(Array<String>)`: Names of all the categories going to be included
+ - `cooldown(Boolean)`: Enables cool-downs
+ - `evalprefix(String)`: 
+
+
 ## Functions
 To access the functions, you need to do this:
 ```js
-const rfasqls_functions = require("rfasqls").Functions;
+const rfasqls_functions = require("rfasqls").functions;
 ```
 
 ##### Some functions include:
@@ -22,5 +40,6 @@ const rfasqls_functions = require("rfasqls").Functions;
 6. `parseUrl(url(String))`: Returns a promise that resolves with JSON from a given URL.
 7. `capFirst(str(String))`: Capitalizes the first letter of each word in a string.
 8. `check(arr(Object or Array), type(Array or String))`: This one is KINDA hard to explain and use. I would recommend ignoring it.
+9. `equals(a(Anything), b(Anything), check_order(Boolean), crylic(Boolean))`: Returns a boolean depending if `a` is equal to `b`. Most handy when working with objects, or other complex values.
 
 > BTW I didn't just spam type `rfasqls`... it is an abbreviation for something i should have written down ;-;
