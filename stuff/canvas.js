@@ -24,12 +24,10 @@ module.exports = {
     ctx.lineTo(x, y + radius.tl)
     ctx.quadraticCurveTo(x, y, x + radius.tl, y)
     ctx.closePath()
-    if (fill) {
+    if (fill)
       ctx.fill()
-    }
-    if (stroke) {
+    if (stroke)
       ctx.stroke()
-    }
   },
 
   /**
