@@ -1,7 +1,7 @@
 // So we can use the classes to check crap
 const discord = require("discord.js");
 const Events = require("./events.js");
-const map = discord.Collection();
+const map = new discord.Collection();
 
 class Discord extends Events {
 	constructor(client, { gcdMessage, cdMessage, gcooldowns, cooldowns, name, prefix, cats, admins, evalprefix, evalfunc, args } = {}, setup) {
