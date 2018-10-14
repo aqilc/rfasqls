@@ -20,5 +20,6 @@ module.exports = {
         "no-empty": "warn",
         "no-unused-vars": "warn",
         "no-console": "off",
+        "no-func-assign": "off"
     }
 };
