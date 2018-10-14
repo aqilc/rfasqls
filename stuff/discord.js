@@ -1,10 +1,22 @@
 // So we can use the classes to check crap
 const discord = require("discord.js");
 const Events = require("./events.js");
-const map = new discord.Collection();
+const map = discord.Collection;
 
 class Discord extends Events {
-	constructor(client, { gcdMessage, cdMessage, gcooldowns, cooldowns, name, prefix, cats, admins, evalprefix, evalfunc, args } = {}, setup) {
+	constructor(client, {
+		gcdMessage,
+		cdMessage,
+		gcooldowns,
+		cooldowns,
+		name,
+		prefix,
+		cats,
+		admins,
+		evalprefix,
+		evalfunc,
+		args
+	} = {}, setup) {
 		super();
 
 		if(!client)
@@ -25,7 +37,7 @@ class Discord extends Events {
 			throw new Error("You need to specify your discord bot's name in the constructor options.")
 		if(!this.prefix)
 			throw new Error("You need to specify a prefix in the constructor options.")
-		if(this.admins === [] && this.evalprefix && this.evalfunc)
+		if(this.admins === [] && (this.evalprefix || this.evalfunc))
 			console.warn("It is advisable to specify admins to use the eval abilities of this bot.")
 		if(this.evalprefix && !this.evalfunc)
 			console.warn("You should probably include an `evalfunc` function to use eval")
@@ -101,10 +113,8 @@ class Discord extends Events {
 		})
 		this.client.on("message", msg => {
 			this.emit("message", msg);
-			if(this.evalprefix && this.evalfunc && msg.content.startsWith(this.evalprefix) && this.admins.includes(msg.author.id)) {
-				let code = msg.content.slice(this.evalprefix.length).trim();
-				this.evalfunc(msg, code);
-			}
+			if(this.evalprefix && this.evalfunc && msg.content.startsWith(this.evalprefix) && this.admins.includes(msg.author.id))
+				this.evalfunc(msg, msg.content.slice(this.evalprefix.length).trim());
 			if(msg.channel.type !== "text")
 				return this.emit("dm", msg);
 
