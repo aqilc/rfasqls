@@ -11,6 +11,8 @@ module.exports = {
    * @param {boolean} round
    */
   random(min, max, round) {
+    if(min instanceof Array)
+      return min[this.random(0, min.length, true)]
     if(min && !max)
       min = 0, max = min
     return round ? Math.round(Math.random() * (max-min) + min) : Math.random() * (max-min) + min
@@ -26,8 +28,8 @@ module.exports = {
    */
   page_maker(array, num = 10, page = 0, func) {
     if(func && typeof func === "function") {
-      for(var i = 0; i < array.slice(page*num, page*num + num).length; i ++) {
-        func(i + page*num, array.slice(page*num, page*num + num)[i])
+      for(var i = 0; i < array.slice(page * num, page * num + num).length; i ++) {
+        func(i + page * num, array.slice(page * num, page * num + num)[i])
       }
       return this
     }
@@ -263,12 +265,24 @@ module.exports = {
    * @return {boolean}
    */
   check(arr, type) {
+
+    if(typeof arr !== "object")
+      return false;
+
     if(typeof type === "string") {
+      // If the value to check is an array
       if(Array.isArray(arr))
         return arr.every(e => typeof e === type);
+
+      // If the value to check is an Object
       else
         return Object.values(arr).every(e => typeof e === type);
-    } else if(type instanceof Array) {
+    }
+
+    // If the thing to check for is an array
+    else if(type instanceof Array) {
+
+      // If the value to check is an array
       if(Array.isArray(arr))
         for(let i = 0; i < type.length; i ++) {
           if(this.check(arr, "object") && arr.every(e => !Array.isArray(e)) && arr.every(e => e[type[i]]))
@@ -277,13 +291,20 @@ module.exports = {
           else if(!arr.includes(type[i]))
             return false;
         }
+
+      // If the value to check is an object
       else
         for(let i = 0; i < type.length; i ++)
           if(!Object.keys(arr).includes(type[i]))
             return false;
       return true;
-    } else
-      return false;
+    }
+
+    else if(type instanceof Object && arr instanceof Object)
+      return this.equals(arr, type);
+
+    // Returns false by default
+    return false;
   },
 
   /**
@@ -303,5 +324,115 @@ module.exports = {
       .replace(/ /g, "\": \"")
       .replace(/_/g, " "));
     return json;
+  },
+
+  /**
+   * Checks if 2 things are equal to each other. Source: https://github.com/ReactiveSets/toubkal/blob/master/lib/util/value_equals.js#L31
+   * @param {anything} a
+   * @param {anything} b
+   * @param {Boolean} check_order
+   * @param {Boolean} cyclic
+   * @return {Boolean}
+   */
+  equals(a, b, check_order, cyclic) {
+    return a === b && a !== 0 || _equals( a, b );
+
+    function _equals(a, b) {
+      var s, l, p, x, y;
+
+      // They should have the same toString() signature
+      if ((s = toString.call(a)) !== toString.call(b))
+        return false;
+
+      switch(s) {
+        default:
+          return a.valueOf() === b.valueOf();
+
+        case '[object Number]':
+          a = +a;
+          b = +b;
+
+          return a ? a === b : a === a ? 1/a === 1/b : b !== b;
+
+        case '[object RegExp]':
+          return a.source == b.source
+            && a.global == b.global
+            && a.ignoreCase == b.ignoreCase
+            && a.multiline == b.multiline
+            && a.lastIndex == b.lastIndex;
+
+        case '[object Function]':
+          return false;
+
+        case '[object Array]':
+          if (cyclic && (x = reference_equals(a, b)) !== null)
+            return x;
+
+          if ((l = a.length) != b.length)
+            return false;
+
+          while ( l -- ) {
+            if ((x = a[l]) === (y = b[l]) && x !== 0 || _equals(x, y))
+              continue;
+
+            return false;
+          }
+          return true;
+
+        case '[object Object]':
+          if (cyclic && (x = reference_equals(a, b)) !== null)
+            return x;
+
+          l = 0;
+
+          if (check_order) {
+            var properties = [];
+
+            for (p in a) {
+              if (a.hasOwnProperty(p)) {
+                properties.push(p);
+                if ((x = a[p]) === (y = b[p]) && x !== 0 || _equals(x, y)) continue;
+                return false;
+              }
+            }
+
+            // Check if 'b' has as the same properties as 'a' in the same order
+            for (p in b)
+              if (b.hasOwnProperty(p) && properties[l ++] != p )
+                return false;
+          } else {
+            for (p in a) {
+              if (a.hasOwnProperty(p)) {
+                ++ l;
+
+                if ((x = a[p]) === (y = b[p]) && x !== 0 || _equals(x, y)) continue;
+
+                return false;
+              }
+            }
+            for (p in b)
+              if (b.hasOwnProperty(p) && --l < 0)
+                return false;
+          }
+          return true;
+      }
+    }
+    function reference_equals(a, b) {
+      var object_references = [];
+
+      return (reference_equals = _reference_equals)(a, b);
+
+      function _reference_equals(a, b) {
+        var l = object_references.length;
+
+        while ( l -- )
+          if (object_references[l --] === b)
+            return object_references[l] === a;
+
+        object_references.push(a, b);
+
+        return null;
+      }
+    }
   }
 }
