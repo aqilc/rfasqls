@@ -216,7 +216,7 @@ class Discord extends Events {
     return true;
   }
 	static async getMessage(guild, id) {
-		for(let i of guild.channels.array()) {
+		for(let i of guild.channels.filter(c => c.type === "text").array()) {
 			let msg;
 			if((msg = i.messages.get(id)) || (msg = await i.fetchMessage(id)))
 				return msg;
