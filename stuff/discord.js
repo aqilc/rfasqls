@@ -218,8 +218,10 @@ class Discord extends Events {
 	static async getMessage(guild, id) {
 		for(let i of guild.channels.filter(c => c.type === "text").array()) {
 			let msg;
-			if((msg = i.messages.get(id)) || (msg = await i.fetchMessage(id)))
-				return msg;
+			try {
+				if((msg = i.messages.get(id)) || (msg = await i.fetchMessage(id)))
+					return msg;
+			} catch(err) { continue; }
 		}
 	}
 }
