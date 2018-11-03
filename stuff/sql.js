@@ -56,7 +56,7 @@ class SQL {
   get setup() {
     let t = this;
     return {
-      async users({ items, quests, login } = {}, additional) {
+      async users([ items, quests, login ] = [], additional) {
         await t.create("users", Object.assign({
           num: "INTEGER PRIMARY KEY",
           id: "TEXT",

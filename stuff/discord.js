@@ -5,17 +5,22 @@ const map = discord.Collection;
 
 class Discord extends Events {
 	constructor(client, {
-		gcdMessage,
-		cdMessage,
-		gcooldowns,
 		cooldowns,
 		name,
 		prefix,
 		cats,
 		admins,
+		args,
+		tags,
+
+		messages,
+		gcdMessage,
+		cdMessage,
+		readyMessage,
+
+		evalopt,
 		evalprefix,
 		evalfunc,
-		args
 	} = {}, setup) {
 		super();
 
@@ -24,14 +29,23 @@ class Discord extends Events {
 		this.name = name;
 		this.client = client;
 		this.prefix = prefix;
-		this.evalprefix = evalprefix;
-		this.cooldowns = cooldowns || true;
-		this.gcooldowns = gcooldowns || true;
-		this.cdMessage = cdMessage || `Please wait \`%time MS\` until you can use the \`%command\` command`
-		this.gcdMessage = gcdMessage || `***SLOW DOWNNNN!*** You guys are using this command too fast! Wait \`%time MS\` before you can use \`%command\` command again`;
-		this.evalfunc = typeof evalfunc === "function" && evalfunc;
+		this.eval = {
+			prefix: evalprefix || (evalopt && evalopt.prefix),
+			func: (typeof evalfunc === "function" && evalfunc) || (evalopt && typeof evalopt.func === "function") && evalopt.func,
+		}
+		this.cooldowns = {
+			user: (cooldowns && cooldowns.user) || true,
+			global: (cooldowns && cooldowns.global) || true,
+		};
+		this.messages = {
+			cd: cdMessage || (messages && messages.cd) || `Please wait \`%time MS\` until you can use the \`%command\` command`,
+			gcd: gcdMessage || (messages && messages.gcd) || `***SLOW DOWNNNN!*** You guys are using this command too fast! Wait \`%time MS\` before you can use \`%command\` command again`,
+			ready: readyMessage || (messages && messages.ready) || `Client %username (ID: %id) online at %date\nCurrent Options set to: %options`,
+		};
 		this.categories = cats instanceof Array && cats || [];
 		this.admins = admins instanceof Array && admins || [];
+		if(tags && tags.file)
+			this.tags = tags;
 
 		if(!this.name)
 			throw new Error("You need to specify your discord bot's name in the constructor options.")
@@ -141,7 +155,7 @@ class Discord extends Events {
 				else if(cd) {
 					let endtime = timestamps.get(msg.author.id) + cd;
 					if(now < endtime)
-						return msg.reply(this.gcdMessage.replace(/%command/g, command.name).replace(/%time/g, endtime - Date.now()).replace(/%timesec/g, ((endtime - Date.now()) / 1000).toFixed(1)));
+						return msg.reply(this.messages.cd.replace(/%command/g, command.name).replace(/%time/g, endtime - Date.now()).replace(/%timesec/g, ((endtime - Date.now()) / 1000).toFixed(1)));
 					timestamps.set(msg.author.id, now), setTimeout(() => timestamps.delete(msg.author.id), cd);
 				}
 			}
@@ -151,15 +165,15 @@ class Discord extends Events {
 				let gcd = command[this._args.gcd] || 0;
 				if(gcd)
 					if((gcooldowns.get(command.name) || 0) + gcd > Date.now())
-						return msg.reply(this.gcdMessage.replace(/%command/g, command.name).replace(/%time/g, gcooldowns.get(command.name) + gcd - Date.now()).replace(/%timesec/g, (gcooldowns.get(command.name) + gcd - Date.now()).toFixed(1)));
+						return msg.reply(this.messages.gcd.replace(/%command/g, command.name).replace(/%time/g, gcooldowns.get(command.name) + gcd - Date.now()).replace(/%timesec/g, (gcooldowns.get(command.name) + gcd - Date.now()).toFixed(1)));
 					else cooldowns.set(command.name, Date.now())
 			}
 
 			this.emit("command", msg, command);
-			command[this._args.f](msg, content);
+			(command.count ++, command)[this._args.f](msg, content);
 		})
-		this.client.on("guildMemberJoin", member => this.emit("mem-join", member))
-		this.client.on("guildMemberJoin", member => this.emit("mem-leave", member))
+		this.client.on("guildMemberAdd", member => this.emit("mem-join", member))
+		this.client.on("guildMemberRemove", member => this.emit("mem-leave", member))
 
 		return this;
 	}
@@ -193,7 +207,7 @@ class Discord extends Events {
 
     return person.id;
   }
-	static has_roles(member, role_name = ["Moderator"]) {
+	static hasRoles(member, role_name = ["Moderator"]) {
     if(typeof role_name === "string")
       role_name = [role_name];
     for(let i of role_name)
@@ -201,5 +215,12 @@ class Discord extends Events {
         return false;
     return true;
   }
+	static async getMessage(guild, id) {
+		for(let i of guild.channels) {
+			let msg;
+			if((msg = i.messages.get(id)) || (msg = await i.fetchMessage(id)))
+				return msg;
+		}
+	}
 }
 module.exports = Discord;

@@ -295,7 +295,7 @@ module.exports = {
       // If the value to check is an object
       else
         for(let i = 0; i < type.length; i ++)
-          if(!Object.keys(arr).includes(type[i]))
+          if(!arr.hasOwnProperty(type[i]))
             return false;
       return true;
     }
@@ -335,7 +335,7 @@ module.exports = {
    * @return {Boolean}
    */
   equals(a, b, check_order, cyclic) {
-    return a === b && a !== 0 || _equals( a, b );
+    return a === b && a !== 0 || _equals(a, b);
 
     function _equals(a, b) {
       var s, l, p, x, y;
@@ -405,7 +405,8 @@ module.exports = {
               if (a.hasOwnProperty(p)) {
                 ++ l;
 
-                if ((x = a[p]) === (y = b[p]) && x !== 0 || _equals(x, y)) continue;
+                if ((x = a[p]) === (y = b[p]) && x !== 0 || _equals(x, y))
+                  continue;
 
                 return false;
               }
