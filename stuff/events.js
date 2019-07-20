@@ -23,8 +23,8 @@ class Events {
       name: event,
       fn: fn,
       called: 0,
-      last_call: new Date().valueOf(),
-      uses: Math.abs(uses) || Infinity
+      last_call: Date.now(),
+      uses: uses || Infinity
     });
     return this;
   }
@@ -42,7 +42,7 @@ class Events {
       name: event,
       fn: fn,
       called: 0,
-      last_call: new Date().valueOf(),
+      last_call: Date.now(),
       uses: 1,
     });
     return this;
@@ -57,7 +57,7 @@ class Events {
   emit(event, ...args) {
     let e = this._events.filter(e => e.name === event);
 
-    if(e !== [])
+    if(e.length)
       if(e.length === 1 && e[0].uses)
         e[0].fn(...args), e[0].called ++, e[0].last_call = Date.now(), e[0].uses --;
       else
@@ -91,7 +91,7 @@ class Events {
       name: event,
       fn: fn,
       called: 0,
-      last_call: new Date().valueOf(),
+      last_call: Date.now(),
       uses: Math.abs(uses) || Infinity
     });
     return this;
@@ -105,7 +105,7 @@ class Events {
   static emit(event, ...args) {
     let e = _events.filter(e => e.name === event);
 
-    if(e !== [])
+    if(e.length)
       if(e.length === 1 && e[0].uses)
         e[0].fn(...args), e[0].called ++, e[0].last_call = Date.now(), e[0].uses --;
       else
